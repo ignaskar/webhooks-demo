@@ -11,6 +11,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AirlineWeb.Data;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace AirlineWeb
 {
@@ -28,6 +31,13 @@ namespace AirlineWeb
         {
 
             services.AddControllers();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            
+            services.AddDbContext<AirlineDbContext>(o =>
+            {
+                o.UseSqlServer(Configuration.GetConnectionString("SQLDB"));
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AirlineWeb", Version = "v1" });
