@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using TravelAgentWeb.Data;
 
 namespace TravelAgentWeb
 {
@@ -28,6 +30,11 @@ namespace TravelAgentWeb
         {
 
             services.AddControllers();
+            services.AddDbContext<TravelAgentDbContext>(o =>
+            {
+                o.UseSqlServer(Configuration.GetConnectionString("SQLDB"));
+            });
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TravelAgentWeb", Version = "v1" });
