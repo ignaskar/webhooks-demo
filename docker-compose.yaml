@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  rabbitmq:
+    container_name: "RabbitMQ"
+    image: "rabbitmq:3-management"
+    hostname: "rabbit1"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    labels:
+      NAME: "some-rabbit"
+
+  sqlserver:
+    container_name: "SQLServer"
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "!IqymyZcqa3^9"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
