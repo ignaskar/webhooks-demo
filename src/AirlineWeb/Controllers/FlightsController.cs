@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AirlineWeb.Data;
 using AirlineWeb.Dtos;
+using AirlineWeb.MessageBus;
 using AirlineWeb.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +18,13 @@ namespace AirlineWeb.Controllers
     {
         private readonly AirlineDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IMessageBusClient _messageBus;
 
-        public FlightsController(AirlineDbContext context, IMapper mapper)
+        public FlightsController(AirlineDbContext context, IMapper mapper, IMessageBusClient messageBus)
         {
             _context = context;
             _mapper = mapper;
+            _messageBus = messageBus;
         }
 
         [HttpGet("{flightCode}", Name = "GetFlightDetailsByFlightCode")]
@@ -74,9 +77,40 @@ namespace AirlineWeb.Controllers
                 return NotFound();
             }
 
+            var oldPrice = flight.PricePerSeat;
+            
             _mapper.Map(flightToUpdate, flight);
 
-            _context.SaveChanges();
+            try
+            {
+                _context.SaveChanges();
+                
+                if (oldPrice != flight.PricePerSeat)
+                {
+                    Console.WriteLine("Price changed - Place message on bus");
+
+                    var message = new NotificationMessageDto
+                    {
+                        WebhookType = "pricechange",
+                        OldPricePerSeat = oldPrice,
+                        NewPricePerSeat = flight.PricePerSeat,
+                        FlightCode = flight.FlightCode
+                    };
+                    
+                    _messageBus.SendMessage(message);
+                }
+                else
+                {
+                    Console.WriteLine("No Price change");
+                }
+                
+                return NoContent();
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return NoContent();
         }

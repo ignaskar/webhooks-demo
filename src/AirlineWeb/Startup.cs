@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AirlineWeb.Data;
+using AirlineWeb.MessageBus;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,6 +38,8 @@ namespace AirlineWeb
             {
                 o.UseSqlServer(Configuration.GetConnectionString("SQLDB"));
             });
+
+            services.AddSingleton<IMessageBusClient, MessageBusClient>();
 
             services.AddSwaggerGen(c =>
             {
