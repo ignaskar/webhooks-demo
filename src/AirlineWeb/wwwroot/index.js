@@ -1,6 +1,6 @@
 ﻿let registerButton = document.querySelector("#register");
 let webhookURI = document.querySelector("#webhook");
-let webhookType = document.querySelector("#webhookType");
+let webhookType = document.querySelector("#webhooktype");
 let successBox = document.querySelector("#alertSuccess");
 let dangerBox = document.querySelector("#alertDanger");
 let dangerMessage = document.querySelector("#dangerMessage");
@@ -30,7 +30,7 @@ registerButton.onclick = () => {
                         'Content-Type': 'application/json'
                     }
                 });
-
+            
             const content = await rawResponse.json();
 
             successMessage.innerHTML =
